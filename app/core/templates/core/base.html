@@ -11,7 +11,25 @@
 </head>
 <body class="bg-dark">
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand" href="#">Movie website</a>
+    <a class="navbar-brand" href="/">Movie website</a>
+    <ul class="navbar-nav mt-2 mt-lg-0">
+        {% if user.is_authenticated %}
+            <li class="nav-item active">
+                <a class="nav-link" style="white-space: nowrap;">{{ user.username }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'logout' %}" style="white-space: nowrap;">Logout</a>
+            </li>
+        {% else %}
+            {% if '/auth/' in request.path %}
+                <li class="nav-item active">
+            {% else %}
+                <li class="nav-item">
+            {% endif %}
+        <a class="nav-link" href="{% url 'auth' %}" style="white-space: nowrap;">Sign up / Login</a>
+        </li>
+        {% endif %}
+    </ul>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo02"
             aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
