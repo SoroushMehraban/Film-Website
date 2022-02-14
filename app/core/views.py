@@ -5,9 +5,12 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 
+from .models import Movie
+
 
 def home(request):
-    return render(request, 'core/home.html')
+    movies = Movie.objects.all()
+    return render(request, 'core/home.html', context={'movies': movies})
 
 
 def authentication_page(request):

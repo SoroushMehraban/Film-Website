@@ -5,7 +5,7 @@ from django.db import models
 class Movie(models.Model):
     """Movie model for showing a movie in a movie list"""
     name = models.CharField(max_length=100)
-    poster = models.ImageField(upload_to='posters/')
+    poster = models.URLField(null=True, blank=True)
     director_name = models.CharField(max_length=100)
 
     def __str__(self):
