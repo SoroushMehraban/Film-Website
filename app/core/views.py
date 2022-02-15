@@ -6,7 +6,8 @@ from django.urls import reverse
 from django.contrib import messages
 
 from .models import Movie, Comment
-from .utils import get_text
+from .utils.natural_language_understanding import is_violent
+from .utils.speech_to_text import get_text
 
 
 def home(request):
@@ -25,8 +26,12 @@ def home(request):
             if file_type in ['flac', 'ogg', 'wav', 'webm', 'mp3', 'mpeg']:
                 content_type = f"audio/{file_type}"
                 text = get_text(uploaded_sound, content_type)
-                Comment(movie=movie, content=text, user=request.user).save()
-                messages.success(request, "Comment is added successfully")
+                content_is_violent = is_violent(text, threshold=0.5)
+                if content_is_violent:
+                    messages.error(request, 'Comment content is violent.')
+                else:
+                    Comment(movie=movie, content=text, user=request.user).save()
+                    messages.success(request, "Comment is added successfully")
             else:
                 messages.error(request, 'File format is not supported')
         else:
