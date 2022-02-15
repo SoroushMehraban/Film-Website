@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib import messages
 
 from .models import Movie, Comment
+from .utils.language_translator import translate_comment
 from .utils.natural_language_understanding import is_violent
 from .utils.speech_to_text import get_text
 
@@ -41,6 +42,28 @@ def home(request):
 
     movies = Movie.objects.all()
     return render(request, 'core/home.html', context={'movies': movies})
+
+
+def comment_page(request, movie_id):
+    movie = Movie.objects.get(id=movie_id)
+    comment_numbers = Comment.objects.filter(movie=movie).count()
+    context = {'movie': movie, 'comment_numbers': comment_numbers}
+
+    if 'lang' in request.GET:
+        selected_lang = request.GET.get('lang')
+        out_comments = []
+        comments = Comment.objects.filter(movie=movie)
+        if selected_lang == "en":
+            for comment in comments:
+                out_comments.append({"content": comment.content, "user": comment.user})
+        else:
+            for comment in comments:
+                out_comments.append({"content": translate_comment(comment.content,  selected_lang),
+                                     "user": comment.user})
+
+        context['comments'] = out_comments
+
+    return render(request, 'core/comment.html', context=context)
 
 
 def authentication_page(request):

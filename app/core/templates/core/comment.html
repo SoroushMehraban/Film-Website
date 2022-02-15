@@ -1,0 +1,47 @@
+{% extends "core/base.html" %}
+{% load static %}
+{% block content %}
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-10 mx-2 mt-4 bg-light">
+                <div class="container">
+                    <div class="row my-2">
+                        <div class="col-xl-3">
+                            <img width="200" src="{{ movie.poster }}" alt="Card image cap">
+                        </div>
+                        <div class="col-xl-9">
+                            <h3>{{ movie.name }}</h3>
+                            <p><b>Director:</b> {{ movie.director_name }}</p>
+                            <p><b class="text-success"><i class="fa fa-comment"></i> Comment:</b> <b>{{ comment_numbers }}</b></p>
+                        </div>
+                    </div>
+                </div>
+                {%  if comment_numbers > 0 %}
+                <div class="container">
+                    <div class="row mb-2">
+                        <div class="col-12 text-center">
+                            <h3>Language:</h3>
+                            <a href="?lang=en"><img src="{% static 'core/img/united-states.png' %}" width="50"></a>
+                            <a href="?lang=de"><img src="{% static 'core/img/germany.png' %}" width="50"></a>
+                            <a href="?lang=es"><img src="{% static 'core/img/spain.png' %}" width="50"></a>
+                        </div>
+                    </div>
+                </div>
+                {%  endif %}
+                {% if comments %}
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12">
+                            <h1><i class="fa fa-comment"></i></h1>
+                            {% for comment in comments %}
+                                <p><b>{{ comment.user }}:</b> {{ comment.content }}</p>
+                                <hr>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock content %}
