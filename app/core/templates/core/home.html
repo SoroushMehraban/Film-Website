@@ -1,25 +1,77 @@
 {% extends "core/base.html" %}
 {% load static %}
 {% block content %}
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+                <div class="alert alert-success"> {{ message }}</div>
+            {% else %}
+                <div class="alert alert-danger"> {{ message }}</div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
     <div class="container mt-4">
         <div class="row justify-content-center">
-        {% for movie in movies %}
-            <div class="cold-lg-3 mx-2 mb-2">
-                <div class="card" style="width: 18rem;">
-                    <img class="card-img-top" src="{{movie.poster}}" alt="Card image cap">
-                    <div class="card-body">
-                        <p class="card-text mb-0"><b>{{ movie.name }}</b></p>
-                        <p class="card-text small mt-0"><b>Director:</b> {{ movie.director_name }}</p>
-                        <div class="container">
-                            <div class="row justify-content-center">
-                                <button class="btn btn-sm btn-success mb-2"><i class="fa fa-eye"></i> View comments
-                                </button>
-                                <button class="btn btn-sm btn-warning"><i class="fa fa-plus"></i> Add comment</button>
+            {% for movie in movies %}
+                <div class="cold-lg-3 mx-2 mb-2">
+                    <div class="card" style="width: 18rem;">
+                        <img class="card-img-top" src="{{ movie.poster }}" alt="Card image cap">
+                        <div class="card-body">
+                            <p class="card-text mb-0"><b>{{ movie.name }}</b></p>
+                            <p class="card-text small mt-0"><b>Director:</b> {{ movie.director_name }}</p>
+                            <div class="container">
+                                <div class="row justify-content-center">
+                                    <button class="btn btn-sm btn-success mb-2"><i class="fa fa-eye"></i> View comments
+                                    </button>
+                                    {% if user.is_authenticated %}
+                                        <button class="btn btn-sm btn-warning add-comment-btn"
+                                                movie-id="{{ movie.id }}">
+                                            <i class="fa fa-plus"></i> Add comment
+                                        </button>
+                                    {% else %}
+                                        <a href="{% url 'auth' %}" class="btn btn-sm btn-warning">
+                                            <i class="fa fa-plus"></i> Add comment
+                                        </a>
+                                    {% endif %}
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        </div>
     </div>
-{% endblock %}
+    <div class="modal" id="addCommentModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Upload your comment</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Upload your sound as a comment.</p>
+                    <form method="post" enctype="multipart/form-data">
+                        {% csrf_token %}
+                        <input type="text" class="d-none" name="movie-id">
+                        <input type="file" name="uploaded-sound">
+                        <button class="btn btn-success d-block mt-2"><i class="fa fa-check"></i> Submit</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}
+
+{% block script %}
+    <script>
+        $('.add-comment-btn').on('click', function () {
+            $('input[name="movie-id"]').val($(this).attr('movie-id'));
+            $('#addCommentModal').modal('show');
+        })
+    </script>
+{% endblock script %}

@@ -5,10 +5,35 @@ from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib import messages
 
-from .models import Movie
+from .models import Movie, Comment
+from .utils import get_text
 
 
 def home(request):
+    if request.method == "POST" and request.user.is_authenticated:
+        movie_id = request.POST.get('movie-id')
+        try:
+            movie = Movie.objects.get(id=movie_id)
+        except:
+            messages.error(request, 'Movie does not exist')
+            return HttpResponseRedirect(request.path_info)  # redirect to the same page
+
+        uploaded_sound = request.FILES.get('uploaded-sound')
+        if uploaded_sound:  # if an sound is uploaded
+            file_name = str(uploaded_sound)
+            file_type = file_name.split('.')[-1]
+            if file_type in ['flac', 'ogg', 'wav', 'webm', 'mp3', 'mpeg']:
+                content_type = f"audio/{file_type}"
+                text = get_text(uploaded_sound, content_type)
+                Comment(movie=movie, content=text, user=request.user).save()
+                messages.success(request, "Comment is added successfully")
+            else:
+                messages.error(request, 'File format is not supported')
+        else:
+            messages.error(request, 'File is not uploaded')
+
+        return HttpResponseRedirect(request.path_info)  # redirect to the same page
+
     movies = Movie.objects.all()
     return render(request, 'core/home.html', context={'movies': movies})
 
