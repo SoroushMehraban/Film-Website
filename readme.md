@@ -1,7 +1,7 @@
 # Cloud computing first assignment
 ## A brief introduction
 This is the first assignment of the cloud computing course. The main ideas are:
-- Created a simple website which is done using the Django framework.
+- Created a simple website using the Django framework.
 - Using IBM cloud services to comment on the movies.
    - **Speech to text**: user has to send his comment by sending a recorded voice. Then, by passing the voice to the IBM
      Speech2text service, it is converted to text.
